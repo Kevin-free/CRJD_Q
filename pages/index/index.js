@@ -155,16 +155,12 @@ Page({
       return false
     }
 
-    //Todo提交时一直loading，成功弹成功框，失败弹失败框。
     wx.showToast({
       title: '数据上传中',
       icon: 'loading',
-      duration: 10000
+      duration: 20000 //设置持续loading时间20s
     });
-    setTimeout(function() {
-      wx.hideToast()
-    }, 1500);
-
+    
     console.log('form发生了submit事件成功，携带数据为：', e.detail.value)
     const that = this;
     wx.request({
@@ -186,7 +182,11 @@ Page({
       header: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      success: function(res) {
+      success: function (res) {
+        //成功时则取消loading
+        setTimeout(function () {
+          wx.hideToast()
+        }, 10);
         console.log('数据上传成功')
         console.log(util.formatTime)
         console.log(res)
@@ -204,8 +204,11 @@ Page({
         })
       },
       fail: function(res) {
+        //失败也取消loading
+        setTimeout(function () {
+          wx.hideToast()
+        }, 10);
         console.log("数据上传失败")
-        console.log("服务器可能在睡觉，请稍后再试哟")
         wx.showModal({
           title: '温馨提示',
           content: '数据上传失败~服务器可能在睡觉，请稍后再试哟',

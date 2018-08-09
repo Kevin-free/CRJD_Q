@@ -9,9 +9,9 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
 
     imageList: [
-      'https://github.com/Kevin-free/CRJD/blob/master/hui.png?raw=true',
-      'https://github.com/Kevin-free/CRJD/blob/master/ydxcx.png?raw=true',
-      'https://github.com/Kevin-free/CRJD/blob/master/wxcode.jpg?raw=true'
+      'https://gitee.com/kevin_tao/CRJD/raw/master/ydxcx.png',
+      'https://gitee.com/kevin_tao/CRJD/raw/master/wxcode.jpg',
+      'https://gitee.com/kevin_tao/CRJD/raw/master/wxqCode.png'
     ],
   },
   onLoad: function () {
