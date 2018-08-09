@@ -1,0 +1,126 @@
+<!--index.wxml-->
+<view>
+  <text style='font-size:14px;'>此程序可提供江西移动用户办理宽带续费，套餐升级，WiFi续费等业务</text>
+  <view class='pre_info'>
+    <view style='font-size:12px;'>有疑问联系营业员：欧阳钦
+      <text bindtap='phonecallevent' style='color:#8190af;'>{{phoneNum}}</text>
+    </view>
+  </view>
+</view>
+<!--分割线-->
+<view style='border:0; height: 1px; background: #f3f3f3;background-image: linear-gradient(to right, #ccc, #333, #ccc);'></view>
+<!-- form提交表单 -->
+<form bindsubmit="formSubmit" bindreset="formReset">
+  <!-- 顶层 -->
+  <view class="top">
+    <view class='item4'>
+      <view>
+        <text>1.客户姓名*</text>
+        <text class='addinfo'>【必填项】</text>
+      </view>
+      <view class='userBox'>
+        <image src='../../images/my.png'></image>
+        <input class='input1' name='userName' placeholder='请输入您的姓名'></input>
+      </view>
+    </view>
+    <view class='item4'>
+      <view>
+        <text>2.手机号码*</text>
+        <text class='addinfo'>【必填项】</text>
+      </view>
+      <view class='userBox'>
+        <image src='../../images/phoneIcon.png'></image>
+        <input class='input1' name='userPhone' placeholder='请输入手机号码'></input>
+      </view>
+    </view>
+    <view class='item4'>
+      <view>
+        <text>3.服务密码*</text>
+        <text class='addinfo'>【必填项】</text>
+      </view>
+      <text class='text_des'>服务密码为中国移动为客户办理业务的统一密码。
+  获取方式：拨打10086按4号键然后按1号键再输入办卡时使用的身份证号码最后按#号键结束等短信下发即可。
+  若服务密码重置不成功可填010086</text>
+      <input class='input' name='userPassword' placeholder='请输入6位服务密码'></input>
+    </view>
+    <!-- 上传用户照片 -->
+    <view class="block_addimg">
+      <view class='img-txt'>
+        <text>添加图片<text class='addinfo'>【选填项】</text></text>
+        <text class='img-des'>若需要可上传身份证、学生证、校园卡照片</text>
+      </view>
+      <image class='addimg' bindtap="addImages" src="../../images/icon-photograph.png"></image>
+      <image class="showImg" src="{{addImgs}}" wx:if="{{addImgBlock}}"></image>
+    </view>
+    <view class='item4'>
+      <view>
+        <text>4.办理业务类型*</text>
+        <text class='addinfo'>【最少选择1项】</text>
+      </view>
+      <!-- 业务类型选择框组start -->
+      <checkbox-group name="item" bindchange="serviceValChange">
+        <view class='selection'>
+          <block wx:for="{{allItems}}" wx:key="this">
+            <view class="item {{item.checked?'is_checked':''}}">
+              <label class="checkbox">
+                <checkbox value="{{item.value}}" checked="{{item.checked}}" bindchange="checkChange"/>
+                <view class='item3'>
+                  <text>{{item.ywlx}}</text>
+                  <text class='text_des'>{{item.ywsm}}</text>
+                  <input name="room" hidden="{{item.hidden}}" class='input2' placeholder="若办理宽带请留下宿舍楼栋号方便宽带装机" placeholder-style="font-size:30rpx"></input>
+                  <textarea name="addTxt" hidden="{{item.tareahidden}}" class='textarea' placeholder="若有建议反馈可选填，字数不超过200" style='font-size:30rpx'></textarea>
+                </view>
+              </label>
+            </view>
+          </block>
+        </view>
+      </checkbox-group>
+      <!-- 业务类型选择框组end -->
+    </view>
+    <view class='item4'>
+      <view>
+        <text>5.橙人号码*</text>
+        <text class='addinfo'>【必填项】</text>
+      </view>
+      <text class='text_des'>本栏为橙人交单凭证
+        请填写橙人权限号码
+        若未知可填14796765019</text>
+      <input class='input' name='myPhone' placeholder='输入橙人手机号码'></input>
+    </view>
+    <view class='item4'>
+      <view>
+        <text>6.橙人邮箱</text>
+        <text class='addinfo'>【选填项】</text>
+      </view>
+      <text class='text_des'>本栏为橙人获取表格文件的邮箱</text>
+      <view class='block_email'>
+        <view class="weui-cell__hd" style="width: 105px">
+          <picker name='team' bindchange="bindTeamCodeChange" value="{{teamCodeIndex}}" range="{{teamCodes}}">
+            <view class="weui-select">{{teamCodes[teamCodeIndex]}}</view>
+          </picker>
+        </view>
+        <input class='input_email' name='myEmail' placeholder='输入橙人有效邮箱' value='{{myEmail}}'></input>
+      </view>
+    </view>
+    <view class='item2'>
+      <text class='des'>由九江学院本部移动营业厅提供，办理业务请认准九院移动营业厅。</text>
+      <view class='dcmy'>
+        <view class='bmy'>非常不满意</view>
+        <view class='my'>非常满意</view>
+      </view>
+      <view class='fgx'></view>
+      <view>
+        <slider name="dcmy" value='50' show-value></slider>
+      </view>
+    </view>
+    <view class='btn'>
+      <button bindtap='showLoading' form-type='submit' type='primary'>提交</button>
+      <button bindtap='showModalRest' form-type='reset' type='default' style='margin-top:25rpx;'>重置</button>
+    </view>
+  </view>
+</form>
+<!--分割线-->
+<view style='border:0; height: 1px; background: #f3f3f3;background-image: linear-gradient(to right, #ccc, #333, #ccc); '></view>
+<view class='my_box'>
+  <view class='foot'>熊文涛提供技术支持</view>
+</view>

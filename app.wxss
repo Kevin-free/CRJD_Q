@@ -1,0 +1,40 @@
+/**app.wxss**/
+/* 在线导入阿里iconfont图标 */
+/* 记得更新图标后要更新复制阿里的@font-face */
+@import 'weui.wxss';
+
+@font-face {
+  font-family: 'iconfont';  /* project id 764435 */
+  src: url('//at.alicdn.com/t/font_764435_9zwjikag1mr.eot');
+  src: url('//at.alicdn.com/t/font_764435_9zwjikag1mr.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_764435_9zwjikag1mr.woff') format('woff'),
+  url('//at.alicdn.com/t/font_764435_9zwjikag1mr.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_764435_9zwjikag1mr.svg#iconfont') format('svg');
+}
+
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-call1:before { content: "\e6a9"; }
+
+.icon-call2:before { content: "\e610"; }
+
+.icon-coordinates_fill:before { content: "\e6ec"; }
+
+.icon-tijiao:before { content: "\e645"; }
+
+.icon-enter:after { content: "\e6f8"; }
+
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20rpx;
+  box-sizing: border-box;
+} 
