@@ -14,7 +14,7 @@
 </view>
 <view class='body'>
   <view class='box-img'>
-    <image bindtap="imageClick" class='img' src='https://gitee.com/kevin_tao/CRJD/raw/master/ydxcx.png' data-src="https://gitee.com/kevin_tao/CRJD/raw/master/ydxcx.png"></image>
+    <image bindtap="imageClick" class='img' src='https://gitee.com/kevin_tao/CRJD/raw/master/ydwt.png' data-src="https://gitee.com/kevin_tao/CRJD/raw/master/ydwt.png"></image>
   </view>
   <view class='txt'>友情链接 点击大图长按识别可跳至移动微厅</view>
   <view class='box-img'>
@@ -22,11 +22,11 @@
   </view>
   <view class='txt'>联系我们 有建议反馈可扫码添加开发者</view>
   <view class='box-img'>
-    <image bindtap="imageClick" class='img' src='https://gitee.com/kevin_tao/CRJD/raw/master/wxqCode.png' data-src="https://gitee.com/kevin_tao/CRJD/raw/master/wxqCode.png"></image>
+    <image bindtap="imageClick" class='img' src='https://gitee.com/kevin_tao/CRJD/raw/master/qcodeS0819.png' data-src="https://gitee.com/kevin_tao/CRJD/raw/master/qcodeB0819.png"></image>
   </view>
   <view class='txt'>售后服务 可扫码加微信售后服务群</view>
 </view>
 <view class='foot'>
-  <text>version 0.9</text>
+  <text>version 1.1</text>
   <text>熊文涛提供技术支持</text>
 </view>

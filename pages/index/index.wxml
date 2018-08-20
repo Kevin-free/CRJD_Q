@@ -30,7 +30,7 @@
       </view>
       <view class='userBox'>
         <image src='../../images/phoneIcon.png'></image>
-        <input class='input1' name='userPhone' placeholder='请输入手机号码'></input>
+        <input class='input1' name='userPhone' placeholder='请输入手机号码' bindinput='updatePhone'></input>
       </view>
     </view>
     <view class='item4'>
@@ -38,9 +38,8 @@
         <text>3.服务密码*</text>
         <text class='addinfo'>【必填项】</text>
       </view>
-      <text class='text_des'>服务密码为中国移动为客户办理业务的统一密码。
-  获取方式：拨打10086按4号键然后按1号键再输入办卡时使用的身份证号码最后按#号键结束等短信下发即可。
-  若服务密码重置不成功可填010086</text>
+      <text class='text_des'>服务密码是中国移动客户的身份识别密码，由一组6位阿拉伯数字组成，您可凭服务密码进行相关业务的办理及授权。您可拨打10086热线→按4号键→再按1号键，凭入网身份证号码，根据语音提示重置密码即可。
+</text>
       <input class='input' name='userPassword' placeholder='请输入6位服务密码'></input>
     </view>
     <!-- 上传用户照片 -->
@@ -63,11 +62,11 @@
           <block wx:for="{{allItems}}" wx:key="this">
             <view class="item {{item.checked?'is_checked':''}}">
               <label class="checkbox">
-                <checkbox value="{{item.value}}" checked="{{item.checked}}" bindchange="checkChange"/>
+                <checkbox value="{{item.value}}" checked="{{item.checked}}" bindchange="checkChange" />
                 <view class='item3'>
                   <text>{{item.ywlx}}</text>
                   <text class='text_des'>{{item.ywsm}}</text>
-                  <input name="room" hidden="{{item.hidden}}" class='input2' placeholder="若办理宽带请留下宿舍楼栋号方便宽带装机" placeholder-style="font-size:30rpx"></input>
+                  <input name="room" hidden="{{item.hidden}}" class='input2' placeholder="若办理宽带请留下宿舍楼栋号方便宽带装机" placeholder-style="font-size:30rpx" bindinput='updateRoom'></input>
                   <textarea name="addTxt" hidden="{{item.tareahidden}}" class='textarea' placeholder="若有建议反馈可选填，字数不超过200" style='font-size:30rpx'></textarea>
                 </view>
               </label>
@@ -103,19 +102,19 @@
       </view>
     </view>
     <view class='item2'>
-      <text class='des'>由九江学院本部移动营业厅提供，办理业务请认准九院移动营业厅。</text>
+      <text class='ad_des'>由九江学院本部移动营业厅提供，办理业务请认准九院本部四服楼三楼动感精英创业社。</text>
       <view class='dcmy'>
         <view class='bmy'>非常不满意</view>
         <view class='my'>非常满意</view>
       </view>
       <view class='fgx'></view>
       <view>
-        <slider name="dcmy" value='50' show-value></slider>
+        <slider name="dcmy" max='10' value='5' show-value></slider>
       </view>
     </view>
     <view class='btn'>
       <button bindtap='showLoading' form-type='submit' type='primary'>提交</button>
-      <button bindtap='showModalRest' form-type='reset' type='default' style='margin-top:25rpx;'>重置</button>
+      <button form-type='reset' type='default' style='margin-top:25rpx;'>重置</button>
     </view>
   </view>
 </form>

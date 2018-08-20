@@ -9,9 +9,9 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
 
     imageList: [
-      'https://gitee.com/kevin_tao/CRJD/raw/master/ydxcx.png',
+      'https://gitee.com/kevin_tao/CRJD/raw/master/ydwt.png',
       'https://gitee.com/kevin_tao/CRJD/raw/master/wxcode.jpg',
-      'https://gitee.com/kevin_tao/CRJD/raw/master/wxqCode.png'
+      'https://gitee.com/kevin_tao/CRJD/raw/master/qcodeB0819.png'
     ],
   },
   onLoad: function () {

@@ -121,6 +121,9 @@
   width:100%;
   height: 100rpx;
 }
+.ad_des{
+  font-size: 18px;
+}
 .dcmy{
   display: flex;
   flex-direction: row;

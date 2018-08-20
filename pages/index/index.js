@@ -4,18 +4,22 @@ var util = require('../../utils/util.js');
 //var e, n, s = require("../../libs/qqmap-wx-jssdk.js");
 
 //获取应用实例
-var app = getApp();
-var testServer = 'http://203.195.232.77:8080/'; //myServer 203.195.232.77
-var server = 'http://203.195.232.77:8080/toDBDemo/UserAction/Insert';
+var app = getApp();                     //localServer localhost:8080
+var testServer = app.globalData.server; //myServer 203.195.232.77
+var server = testServer+"toDBDemo/UserAction/Insert";//teacherServer www.51jiama.com
+var updatPhone, updateRoom = null;//用于记录更新电话号码
+var imgName = null;//用于记录图片名称
 
 Page({
   data: {
     phoneNum: '14796765019',
+    timeStamp: 0,
 
     form: {
       userName: '',
       userPhone: '',
       userPassword: '',
+      imgPhone: '',
       item: '',
       room: '',
       addTxt: '',
@@ -35,9 +39,17 @@ Page({
         tareahidden: true
       },
       {
+        ywlx: '10元20G校内流量',
+        ywsm: '校内流量：只能在校园基站内使用.超出范围会自动切换为套餐内普通流量。每月功能费10元.本业务和套餐刚好促成最低消费38元，\n即宽带,WiFi免费赠送.',
+        value: '1',
+        check: false,
+        hidden: true,
+        tareahidden: true
+      },
+      {
         ywlx: '低消38元每月20M宽带',
         ywsm: '每月承诺最低消费38元即送价值200元的校园\n20M宽带\n合约期1年\n未达到最低消费系统将自动收取38元',
-        value: '1',
+        value: '2',
         check: false,
         hidden: true,
         tareahidden: true
@@ -45,15 +57,15 @@ Page({
       {
         ywlx: '低消48元每月50M宽带',
         ywsm: '每月承诺最低消费48元即送价值300元的校园\n50M宽带\n合约期1年\n未达到最低消费系统将自动收取48元',
-        value: '2',
+        value: '3',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
         ywlx: '低消38元每月500小时WiFi时长',
-        ywsm: '每月承诺最低消费38元即送价值200元的校园WiFi\n500小时每月的时长\n合约期1年\n未达到最低消费系统将自动收取38元',
-        value: '3',
+        ywsm: '(办理宽带免费赠送，不需要可备注取消) 每月承诺最低消费38元即送价值200元的校园WiFi\n500小时每月的时长\n合约期1年\n未达到最低消费系统将自动收取38元',
+        value: '4',
         check: false,
         hidden: true,
         tareahidden: true
@@ -61,7 +73,7 @@ Page({
       {
         ywlx: '3元每月150小时WiFi时长',
         ywsm: '合约期6个月，扣话费',
-        value: '4',
+        value: '5',
         check: false,
         hidden: true,
         tareahidden: true
@@ -69,31 +81,31 @@ Page({
       {
         ywlx: '6元每月300小时WiFi时长',
         ywsm: '合约期6个月，扣话费',
-        value: '5',
-        check: false,
-        hidden: true,
-        tareahidden: true
-      },
-      {
-        ywlx: '套餐变更28档不限量',
-        ywsm: '每月收取28元月租，10G国内流量+100分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完10G或者20G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086',
         value: '6',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
-        ywlx: '套餐变更48档不限量',
-        ywsm: '每月收取48元月租，20G国内流量+200分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完10G或者20G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086',
+        ywlx: '套餐变更28档不限量',
+        ywsm: '每月收取28元月租，10G国内流量+100分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完10G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086',
         value: '7',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
-        ywlx: '两城一号',
-        ywsm: '上大学不换号那就办两城一号，江西移动用户不想换号码可以办理此业务，办理后前绑定的宽带，集团网等业务将会取消，后期即可享受九江市的校园相关政策',
+        ywlx: '套餐变更48档不限量',
+        ywsm: '每月收取48元月租，20G国内流量+200分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完20G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086',
         value: '8',
+        check: false,
+        hidden: true,
+        tareahidden: true
+      },
+      {
+        ywlx: '两城一号',
+        ywsm: '上大学不换号那就办两城一号，江西移动用户不想换号码可以办理此业务，办理后前绑定的宽带，集团网等业务将会取消，后期即可享受九江市的校园相关政策(注:合账用户不可办理)',
+        value: '9',
         check: false,
         hidden: true,
         tareahidden: true
@@ -101,12 +113,12 @@ Page({
       {
         ywlx: '其他',
         ywsm: '本栏为新活动栏 具体敬请期待 如有备注请填',
-        value: '9',
+        value: '10',
         check: false,
       },
     ],
 
-    teamCodes: ["A4", "A7", "A1", "B1"],
+    teamCodes: ["A4", "A7", "B1"],
     teamCodeIndex: 0,
   },
 
@@ -121,10 +133,10 @@ Page({
         "Content-Type": "application/x-www-form-urlencoded"
       },
       success: function(res) {
-        console.log('服务器连接正常')
+        console.log('服务器连接正常'+testServer)
       },
       fail: function(res) {
-        console.log("服务器连接失败")
+        console.log('服务器连接失败'+testServer)
         wx.showModal({
           title: '温馨提示',
           content: '抱歉~服务器处于维护中！\n暂时无法提交数据，请稍后再试',
@@ -143,10 +155,8 @@ Page({
   },
 
   formSubmit: function(e) {
-
     const params = e.detail.value
     console.log("点击了提交")
-    console.log(params)
 
     // 传入表单数据，调用验证方法
     if (!this.WxValidate.checkForm(params)) {
@@ -154,6 +164,29 @@ Page({
       this.showModal(error)
       return false
     }
+    
+    if (this.data.allItems[2].checked || this.data.allItems[3].checked){
+      if(updateRoom == null){
+        wx.showModal({
+          content: '您选择了宽带 \n请备注输入宿舍号方便安装哦',
+          showCancel: false,
+        })
+        return false
+      }
+    }
+
+    //防止多次提交 20秒后才能提交第二次
+    if (e.timeStamp - this.data.timeStamp <= 20000) {
+      this.setData({ timeStamp: e.timeStamp });
+      wx.showModal({
+        title: '温馨提示',
+        content: '您提交频率太快了，请20秒后再试吧~',
+        showCancel: false,
+        confirmText: '确定',
+      })
+      return false;
+    }
+    this.setData({ timeStamp: e.timeStamp });
 
     wx.showToast({
       title: '数据上传中',
@@ -170,6 +203,7 @@ Page({
         userName: e.detail.value.userName,
         userPhone: e.detail.value.userPhone,
         userPassword: e.detail.value.userPassword,
+        imgPhone: imgName,
         item: e.detail.value.item,
         room: e.detail.value.room,
         addTxt: e.detail.value.addTxt,
@@ -188,13 +222,12 @@ Page({
           wx.hideToast()
         }, 10);
         console.log('数据上传成功')
-        console.log(util.formatTime)
+        //console.log(util.formatTime)
         console.log(res)
         wx.showModal({
           title: '温馨提示',
           content: '数据上传成功~请耐心等待业务办理',
           showCancel: false,
-          cancelText: 'Cancel',
           confirmText: '确定',
           success: function(res) {
             if (res.confirm) {
@@ -213,7 +246,6 @@ Page({
           title: '温馨提示',
           content: '数据上传失败~服务器可能在睡觉，请稍后再试哟',
           showCancel: false,
-          cancelText: 'Cancel',
           confirmText: '确定',
           success: function(res) {
             if (res.confirm) {
@@ -322,18 +354,16 @@ Page({
   formReset: function(e) {
     console.log('form发生了reset事件')
   },
-  qrcodeClick: function() {
-    wx.previewImage({
-      current: "",
-      urls: this.data.image
-    });
-  },
   bindTeamCodeChange: function(e) {
     console.log('picker team code 发生选择改变，携带值为', e.detail.value);
 
     this.setData({
       teamCodeIndex: e.detail.value
     })
+  },
+  updateRoom: function(e){
+    updateRoom = e.detail.value;
+    console.log("updateRoom:"+updateRoom)
   },
   //监听CheckBox多选框改变事件
   serviceValChange: function(e) {
@@ -350,29 +380,31 @@ Page({
     //判断一类单选功能，TODO有bug，需要获取每个box的唯一标识
     //解决！获取最后一个value，即相当于唯一ID   
     var i = e.detail.value.length-1
-    console.log(e.detail.value[i])
-
-    if (e.detail.value[i] == "1") {
+    if (e.detail.value[i] == "2") {
+      allItems[3].checked = false;
+    } else if (checkArr[i] == "3") {
       allItems[2].checked = false;
-    } else if (checkArr[i] == "2") {
-      allItems[1].checked = false;
     }
 
-    if (e.detail.value[i] == "3") {
-      allItems[4].checked = false;
-      allItems[5].checked = false;
-    } else if (checkArr[i] == "4") {
-      allItems[3].checked = false;
-      allItems[5].checked = false;
-    } else if (checkArr[i] == "5") {
-      allItems[3].checked = false;
-      allItems[4].checked = false;
+    if (e.detail.value[i] == "2" || e.detail.value[i] == "3"){     
+      allItems[4].checked = true;
     }
-
-    if (e.detail.value[i] == "6") {
-      allItems[7].checked = false;
-    } else if (checkArr[i] == "7") {
+   
+    if (e.detail.value[i] == "4") {
+      allItems[5].checked = false;
       allItems[6].checked = false;
+    } else if (checkArr[i] == "5") {
+      allItems[4].checked = false;
+      allItems[6].checked = false;
+    } else if (checkArr[i] == "6") {
+      allItems[4].checked = false;
+      allItems[5].checked = false;
+    }
+
+    if (e.detail.value[i] == "7") {
+      allItems[8].checked = false;
+    } else if (checkArr[i] == "8") {
+      allItems[7].checked = false;
     }
 
     this.setData({
@@ -384,6 +416,9 @@ Page({
       phoneNumber: this.data.phoneNum,
     })
   },
+  updatePhone: function(e){
+    updatPhone = e.detail.value;
+  },
   //添加图片
   addImages: function(a) {
     var t = this;
@@ -391,32 +426,39 @@ Page({
       count: 1,
       sizeType: ["compressed"],
       sourceType: ["album", "camera"],
-      success: function(a) {
+      success: function (a) {
+        imgName = updatPhone;
         var e = a.tempFilePaths;
         t.setData({
           addImgBlock: !0,
           addImgs: e
-        })
-        /*,wx.uploadFile({
-                  url: o + "img_upload/userid-" + r,
-                  filePath: e[0],
-                  name: "file",
-                  formData: {
-                    user: "test"
-                  },
-                  success: function (a) {
-                    t.setData({
-                      current: a.data,
-                      urls: [a.data]
-                    });
-                  }
-                }).onProgressUpdate(function (a) {
-                  wx.showToast({
-                    title: "上传" + a.progress + "%",
-                    icon: "loading",
-                    duration: 1e3
-                  });
-                });*/
+        }), wx.uploadFile({
+          url: testServer+"toDBDemo/UserAction/UploadPic",
+          filePath: e[0],
+          name: "file",
+          header: {
+            "Content-Type": "multipart/form-data"
+          },
+          formData: {
+            userPhone: imgName
+          },
+          success: function(a) {
+            t.setData({
+              current: a.data,
+              urls: [a.data]
+            });
+            console.log("图片上传成功！" + imgName);
+          },
+          fail: function(a) {
+            console.log("上传失败！");
+          }
+        }).onProgressUpdate(function(a) {
+          wx.showToast({
+            title: "上传" + a.progress + "%",
+            icon: "loading",
+            duration: 1e3
+          });
+        });
       }
     });
   },

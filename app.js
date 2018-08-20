@@ -24,6 +24,11 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    //localServer   localhost:8080
+    //myServer      193.112.220.22
+    //teacherServer www.51jiama.com
+    //yjServerhttps://www.black-milk.top
+    server: 'https://www.black-milk.top/',
   }
 })
