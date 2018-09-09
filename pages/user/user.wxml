@@ -7,7 +7,7 @@
       <text style='color:#e8f8fb'>获取头像昵称</text>
     </button>
     <block wx:else>
-      <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover" bindtap='openLoginCr'></image>
       <text class="userinfo-nickname">{{userInfo.nickName}}</text>
     </block>
   </view>
@@ -22,11 +22,11 @@
   </view>
   <view class='txt'>联系我们 有建议反馈可扫码添加开发者</view>
   <view class='box-img'>
-    <image bindtap="imageClick" class='img' src='https://gitee.com/kevin_tao/CRJD/raw/master/qcodeS0819.png' data-src="https://gitee.com/kevin_tao/CRJD/raw/master/qcodeB0819.png"></image>
+    <image bindtap="imageClick" class='img' src='https://gitee.com/kevin_tao/CRJD/raw/master/qcodeS0831.png' data-src="https://gitee.com/kevin_tao/CRJD/raw/master/qocdeB0831.png"></image>
   </view>
   <view class='txt'>售后服务 可扫码加微信售后服务群</view>
 </view>
 <view class='foot'>
-  <text>version 1.1</text>
+  <text>version 2.3</text>
   <text>熊文涛提供技术支持</text>
 </view>

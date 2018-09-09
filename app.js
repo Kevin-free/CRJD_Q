@@ -1,6 +1,51 @@
 //app.js
+// var fakeVersion = "0"; //审核时的假版本号
 App({
   onLaunch: function () {
+    // var that = this;
+    // var Server = this.globalData.server
+    // wx.request({
+    //   url: Server + "toDBDemo/AdminAction/ControlVer",
+    //   method: 'GET',
+    //   header: {
+    //     'content-type': 'application/json' // 默认值
+    //   },
+    //   success: function (res) {
+    //     console.log("后台传回的version信息:" + res.data.ver);
+    //     if (res.data.ver == fakeVersion) {
+    //       that.globalData.isFake = true;
+    //       console.log("show fakeView")
+    //     } else {
+    //       that.globalData.isFake = false;
+    //       console.log("show realView")
+    //     }
+    //   }      
+    // })
+
+    const updateManager = wx.getUpdateManager()
+
+    updateManager.onCheckForUpdate(function (res) {
+      // 请求完新版本信息的回调
+      console.log(res.hasUpdate)
+    })
+
+    updateManager.onUpdateReady(function () {
+      wx.showModal({
+        title: '更新提示',
+        content: '新版本已经准备好，是否重启应用？\n-----更新如下-----\n1.完善橙人管理员功能 \n2.增加定时发送邮件功能 \n3.增加定时清空昨日数据 \n4.用户上传图片转至七牛云',
+        success: function (res) {
+          if (res.confirm) {
+            // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+            updateManager.applyUpdate()
+          }
+        }
+      })
+
+    })
+
+    updateManager.onUpdateFailed(function () {
+      // 新的版本下载失败
+    })
 
     // 获取用户信息
     wx.getSetting({
@@ -22,13 +67,14 @@ App({
         }
       }
     })
+
   },
   globalData: {
+    // isFake: true,
     userInfo: null,
-    //localServer   localhost:8080
-    //myServer      193.112.220.22
-    //teacherServer www.51jiama.com
-    //yjServerhttps://www.black-milk.top
-    server: 'https://www.black-milk.top/',
+    //localServer http://localhost:8080
+    //myServer https://www.ifree258.club
+    //yjServer https://www.black-milk.top
+    server: 'http://localhost:8080/',
   }
 })

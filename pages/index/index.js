@@ -1,19 +1,41 @@
 import WxValidate from '../../assets/plugins/wx-validate/WxValidate' //引入第三方验证信息库
-
+const qiniuUploader = require("../../utils/qiniuUploader");
 var util = require('../../utils/util.js');
+var Dec = require('../../utils/public.js'); //引用封装好的加密解密js
 //var e, n, s = require("../../libs/qqmap-wx-jssdk.js");
 
 //获取应用实例
-var app = getApp();                     //localServer localhost:8080
-var testServer = app.globalData.server; //myServer 203.195.232.77
-var server = testServer+"toDBDemo/UserAction/Insert";//teacherServer www.51jiama.com
-var updatPhone, updateRoom = null;//用于记录更新电话号码
-var imgName = null;//用于记录图片名称
+var app = getApp(); 
+var Server = app.globalData.server; 
+var insertServer = Server + "toDBDemo/UserAction/Insert"; 
+var checkCrServer = Server + "toDBDemo/UserAction/CheckCr"
+var verServer = Server + "toDBDemo/AdminAction/ControlVer"
+var imgServer = Server + "toDBDemo/image/upToken"
+var updatPhone, updateRoom = null; //用于记录更新电话号码
+var imgName = null; //用于记录图片名称
+var fakeVersion = "2"; //审核时的假版本号
+
+// 初始化七牛相关参数
+function initQiniu() {
+  var options = {
+    region: 'SCN', // 华北区
+    uptokenURL: imgServer, //别忘了加项目名/urlPatterns
+    // uptoken: 'xxx',
+    domain: 'http://pemli1hxj.bkt.clouddn.com',
+    shouldUseQiniuFileName: false
+  };
+  qiniuUploader.init(options);
+}
 
 Page({
   data: {
+    isFake: true,
     phoneNum: '14796765019',
     timeStamp: 0,
+    hiddenfwmm: true, //设置变量标记是否隐藏
+    hiddencrhm: true,
+    hiddencryx: true,
+    imageObject: {},
 
     form: {
       userName: '',
@@ -25,23 +47,24 @@ Page({
       addTxt: '',
       myPhone: '',
       team: '',
-      myMail: '',
+      //myMail: '',
       dcmy: '',
     },
 
-    allItems: [
-      {
-        ywlx: '存送话费及预约办卡',
-        ywsm: '交100元最高得300.50立即到账.赠送的话费按照每月消费的百分百进行划拨.第六个月返还50本金.具体看网龄长短（一年以下的200.1-2年以下得250.两年以上300得300.）合约期6个月',
-        value: '0',
+    allItems: [{
+        ywlx: '预约办卡',
+        ywsm: '新的城市.新的号码.欢迎预约九江校园移动卡.现在办理即可获得预存100元送100元话费200元宽带200元校园WiFi校内流量40G……',
+        hiddena: true,
+        value: '00',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
-        ywlx: '10元20G校内流量',
-        ywsm: '校内流量：只能在校园基站内使用.超出范围会自动切换为套餐内普通流量。每月功能费10元.本业务和套餐刚好促成最低消费38元，\n即宽带,WiFi免费赠送.',
-        value: '1',
+        ywlx: '免费送40G校内流量',
+        ywsm: '校内流量：只能在校园基站内使用.超出范围会自动切换为套餐内普通流量。\n(需关联校园权益包)',
+        hiddena: true,
+        value: '01',
         check: false,
         hidden: true,
         tareahidden: true
@@ -49,7 +72,8 @@ Page({
       {
         ywlx: '低消38元每月20M宽带',
         ywsm: '每月承诺最低消费38元即送价值200元的校园\n20M宽带\n合约期1年\n未达到最低消费系统将自动收取38元',
-        value: '2',
+        hiddena: true,
+        value: '02',
         check: false,
         hidden: true,
         tareahidden: true
@@ -57,47 +81,53 @@ Page({
       {
         ywlx: '低消48元每月50M宽带',
         ywsm: '每月承诺最低消费48元即送价值300元的校园\n50M宽带\n合约期1年\n未达到最低消费系统将自动收取48元',
-        value: '3',
+        hiddena: true,
+        value: '03',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
         ywlx: '低消38元每月500小时WiFi时长',
-        ywsm: '(办理宽带免费赠送，不需要可备注取消) 每月承诺最低消费38元即送价值200元的校园WiFi\n500小时每月的时长\n合约期1年\n未达到最低消费系统将自动收取38元',
-        value: '4',
+        ywsm: '(办理宽带免费赠送，不需要可备注取消) 每月承诺最低消费38元即送价值200元的校园WiFi\n500小时每月的时长\n合约期1年\n未达到最低消费系统将自动收取38元\n(需关联校园权益包)',
+        hiddena: true,
+        value: '04',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
         ywlx: '3元每月150小时WiFi时长',
-        ywsm: '合约期6个月，扣话费',
-        value: '5',
+        ywsm: '合约期6个月，扣话费\n(需关联校园权益包)',
+        hiddena: true,
+        value: '05',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
         ywlx: '6元每月300小时WiFi时长',
-        ywsm: '合约期6个月，扣话费',
-        value: '6',
+        ywsm: '合约期6个月，扣话费\n(需关联校园权益包)',
+        hiddena: true,
+        value: '06',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
-        ywlx: '套餐变更28档不限量',
-        ywsm: '每月收取28元月租，10G国内流量+100分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完10G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086',
-        value: '7',
+        ywlx: '校园国内不限量28卡',
+        ywsm: '每月收取28元月租，10G国内流量+100分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完10G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086(注:变更套餐次月生效)',
+        hiddena: true,
+        value: '07',
         check: false,
         hidden: true,
         tareahidden: true
       },
       {
-        ywlx: '套餐变更48档不限量',
-        ywsm: '每月收取48元月租，20G国内流量+200分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完20G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086',
-        value: '8',
+        ywlx: '校园国内不限量48卡',
+        ywsm: '每月收取48元月租，20G国内流量+200分钟全国通话，流量超出后限速不限量\n变更套餐后，所有流量内用完20G都会限速，但是可以咨询10086人工服务进行解除限速操作，具体请咨询10086(注:变更套餐次月生效)',
+        hiddena: true,
+        value: '08',
         check: false,
         hidden: true,
         tareahidden: true
@@ -105,7 +135,35 @@ Page({
       {
         ywlx: '两城一号',
         ywsm: '上大学不换号那就办两城一号，江西移动用户不想换号码可以办理此业务，办理后前绑定的宽带，集团网等业务将会取消，后期即可享受九江市的校园相关政策(注:合账用户不可办理)',
-        value: '9',
+        hiddena: true,
+        value: '09',
+        check: false,
+        hidden: true,
+        tareahidden: true
+      },
+      {
+        ywlx: '校园免费V网',
+        ywsm: '本业务为校园套餐自带业务.办理业务时会给予开通.开通后相同网内互打不扣套餐内分钟数.使用3000分钟的集团网分钟数.功能费0元',
+        hiddena: true,
+        value: '10',
+        check: false,
+        hidden: true,
+        tareahidden: true
+      },
+      {
+        ywlx: '校园权益包',
+        ywsm: '[1] 每月30元功能费(月初出账)，次月赠送20元和包红包，有效期12个月。[2]和包每月月初到账如欠费则和包红包无法到账。[3]因第三方接口原因，办理成功后不能撤单。[4] 会员可每月登录和我信一校园大学生专区领取会员专享30G校内流量、30G定向流向，欠费状态下无法领取;[5] 还有更多权利如淘宝、支付宝、美团、滴滴、视频彩铃、电竞部落会员体验等可直接线上领取。',
+        hiddena: true,
+        value: '11',
+        check: false,
+        hidden: true,
+        tareahidden: true
+      },
+      {
+        ywlx: '存送话费',
+        ywsm: '交100元最高得300.50立即到账.赠送的话费按照每月消费的百分百进行划拨.第六个月返还50本金.具体看网龄长短（一年以下的200.1-2年以下得250.两年以上300得300.默认给您办理最高优惠）合约期6个月',
+        hiddena: true,
+        value: '12',
         check: false,
         hidden: true,
         tareahidden: true
@@ -113,30 +171,112 @@ Page({
       {
         ywlx: '其他',
         ywsm: '本栏为新活动栏 具体敬请期待 如有备注请填',
-        value: '10',
+        hiddena: true,
+        value: '13',
         check: false,
       },
     ],
+    
+    teamCodes: ["九院本部A4队", "九院本部A7队", "九院本部B9队"],
+    teamCodeIndex: 1,
+  },
 
-    teamCodes: ["A4", "A7", "B1"],
-    teamCodeIndex: 0,
+  isOpenfwmm: function(e) {
+    var that = this;
+    var hiddenfwmm = this.data.hiddenfwmm;
+    if (hiddenfwmm == true) {
+      that.setData({
+        hiddenfwmm: !hiddenfwmm,
+      })
+    } else {
+      that.setData({
+        hiddenfwmm: !hiddenfwmm,
+      })
+    }
+  },
+  isOpencrhm: function(e) {
+    var that = this;
+    var hiddencrhm = this.data.hiddencrhm;
+    if (hiddencrhm == true) {
+      that.setData({
+        hiddencrhm: !hiddencrhm,
+      })
+    } else {
+      that.setData({
+        hiddencrhm: !hiddencrhm,
+      })
+    }
+  },
+  isOpencryx: function(e) {
+    var that = this;
+    var hiddencryx = this.data.hiddencryx;
+    if (hiddencryx == true) {
+      that.setData({
+        hiddencryx: !hiddencryx,
+      })
+    } else {
+      that.setData({
+        hiddencryx: !hiddencryx,
+      })
+    }
+  },
+
+  isOpen: function(e) {
+    var that = this;
+    var index = e.currentTarget.dataset.index;
+    var allItems = that.data.allItems;
+    var hiddenaa = allItems[index].hiddena;
+    if (hiddenaa == true) {
+      that.setData({
+        ['allItems[' + index + '].hiddena']: !hiddenaa,
+      })
+    } else {
+      that.setData({
+        ['allItems[' + index + '].hiddena']: !hiddenaa,
+      })
+    }
   },
 
   onLoad() {
+    var that = this;
+    wx.request({
+      url: verServer,
+      method: 'GET',
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: function (res) {
+        console.log("后台传回的version信息:" + res.data.ver);
+        if (res.data.ver == fakeVersion) {
+          that.setData({
+            isFake: true
+          })
+          console.log("show fakeView")
+        } else {
+          that.setData({
+            isFake: false
+          })
+          console.log("show realView")
+        }
+      }
+    })
+
+    // var jiami = Dec.Encrypt('test')
+    // console.log('test AES加密：' + jiami);
+    // var jiemi = Dec.Decrypt(jiami);
+    // console.log('test AES解密：' + jiemi);
+
     this.initValidate()
     console.log(this.WxValidate)
     wx.request({
-      url: testServer,
+      url: Server,
       method: 'get',
 
-      header: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
       success: function(res) {
-        console.log('服务器连接正常'+testServer)
+        console.log('服务器连接正常' + Server)
       },
       fail: function(res) {
-        console.log('服务器连接失败'+testServer)
+        console.log('服务器连接失败' + Server)
         wx.showModal({
           title: '温馨提示',
           content: '抱歉~服务器处于维护中！\n暂时无法提交数据，请稍后再试',
@@ -158,15 +298,16 @@ Page({
     const params = e.detail.value
     console.log("点击了提交")
 
-    // 传入表单数据，调用验证方法
+    // 传入表单数据，先调用验证方法
     if (!this.WxValidate.checkForm(params)) {
       const error = this.WxValidate.errorList[0]
       this.showModal(error)
       return false
     }
-    
-    if (this.data.allItems[2].checked || this.data.allItems[3].checked){
-      if(updateRoom == null){
+
+    //判断选择宽带限制
+    if (this.data.allItems[2].checked || this.data.allItems[3].checked) {
+      if (updateRoom == null || updateRoom == "") {
         wx.showModal({
           content: '您选择了宽带 \n请备注输入宿舍号方便安装哦',
           showCancel: false,
@@ -175,9 +316,22 @@ Page({
       }
     }
 
+    //判断选择两城一号限制
+    if (this.data.allItems[9].checked) {
+      if (!(this.data.allItems[7].checked) && !(this.data.allItems[8].checked)) {
+        wx.showModal({
+          content: '您选择了两城一号 请在上两项中选择一个要变更的套餐哦',
+          showCancel: false,
+        })
+        return false
+      }
+    }
+
     //防止多次提交 20秒后才能提交第二次
     if (e.timeStamp - this.data.timeStamp <= 20000) {
-      this.setData({ timeStamp: e.timeStamp });
+      this.setData({
+        timeStamp: e.timeStamp
+      });
       wx.showModal({
         title: '温馨提示',
         content: '您提交频率太快了，请20秒后再试吧~',
@@ -186,75 +340,136 @@ Page({
       })
       return false;
     }
-    this.setData({ timeStamp: e.timeStamp });
+    this.setData({
+      timeStamp: e.timeStamp
+    });
 
+    //显示提交时loading
     wx.showToast({
       title: '数据上传中',
       icon: 'loading',
       duration: 20000 //设置持续loading时间20s
     });
-    
-    console.log('form发生了submit事件成功，携带数据为：', e.detail.value)
-    const that = this;
-    wx.request({
-      url: server,
-      method: 'post',
-      data: util.json2Form({
-        userName: e.detail.value.userName,
-        userPhone: e.detail.value.userPhone,
-        userPassword: e.detail.value.userPassword,
-        imgPhone: imgName,
-        item: e.detail.value.item,
-        room: e.detail.value.room,
-        addTxt: e.detail.value.addTxt,
-        myPhone: e.detail.value.myPhone,
-        team: e.detail.value.team,
-        myEmail: e.detail.value.myEmail,
-        dcmy: e.detail.value.dcmy,
-      }),
 
-      header: {
-        "Content-Type": "application/x-www-form-urlencoded"
+    //传到后台数据库，验证橙人权限是否能提交
+    wx.request({
+      url: checkCrServer, //验证后台服务
+      //定义传到后台的数据
+      data: {
+        team: e.detail.value.team,
+        phone: e.detail.value.myPhone,
       },
-      success: function (res) {
-        //成功时则取消loading
-        setTimeout(function () {
-          wx.hideToast()
-        }, 10);
-        console.log('数据上传成功')
-        //console.log(util.formatTime)
-        console.log(res)
-        wx.showModal({
-          title: '温馨提示',
-          content: '数据上传成功~请耐心等待业务办理',
-          showCancel: false,
-          confirmText: '确定',
-          success: function(res) {
-            if (res.confirm) {
-              console.log('用户点击上传成功')
+      method: 'GET',
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: function(res) {
+        console.log("调用CheckCrServer成功"); //改为isCheck
+        console.log("后台传回的checkCr验证信息:" + res.data.isCheck);
+        if (res.data.isCheck == "ok") {
+          console.log('验证成功，发生submit事件，携带数据为：', e.detail.value)
+          wx.request({
+            url: insertServer, //插入后台服务
+            method: 'post',
+            data: util.json2Form({
+              userName: e.detail.value.userName,
+              userPhone: e.detail.value.userPhone,
+              userPassword: e.detail.value.userPassword,
+              imgPhone: imgName,
+              item: e.detail.value.item,
+              room: e.detail.value.room,
+              addTxt: e.detail.value.addTxt,
+              myPhone: e.detail.value.myPhone,
+              team: e.detail.value.team,
+              //myEmail: e.detail.value.myEmail,
+              dcmy: e.detail.value.dcmy,
+            }),
+
+            header: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            success: function(res) {
+              console.log("调用Insert成功");
+              console.log("后台传回的insert验证信息" + res.data.isInsert);
+              //成功时则取消loading
+              setTimeout(function() {
+                wx.hideToast()
+              }, 10);
+              if (res.data.isInsert == 'ok') {
+                console.log('数据上传成功')
+                //console.log(util.formatTime)
+                console.log(res)
+                wx.showModal({
+                  title: '温馨提示',
+                  content: '数据上传成功~请耐心等待业务办理',
+                  showCancel: false,
+                  confirmText: '确定',
+                  success: function(res) {
+                    if (res.confirm) {
+                      console.log('用户点击上传成功')
+                    }
+                  }
+                })
+              } else {
+                console.log('数据上传失败')
+                console.log(res)
+                wx.showModal({
+                  title: '温馨提示',
+                  content: '数据上传失败~请检查输入数据或联系营业员',
+                  showCancel: false,
+                  confirmText: '确定',
+                })
+              }
+            },
+            fail: function(res) {
+              //失败也取消loading
+              setTimeout(function() {
+                wx.hideToast()
+              }, 10);
+              console.log("数据上传失败")
+              wx.showModal({
+                title: '温馨提示',
+                content: '数据上传失败~服务器可能在睡觉，请稍后再试哟',
+                showCancel: false,
+                confirmText: '确定',
+                success: function(res) {
+                  if (res.confirm) {
+                    console.log('用户点击上传失败')
+                  }
+                }
+              })
             }
-          }
-        })
+          })
+        } else {
+          setTimeout(function() {
+            wx.hideToast()
+          }, 10);
+          wx.showModal({
+            title: '温馨提示',
+            content: '您输入的橙人号码没有提交权限哦~ \n请输入正确橙人号码',
+            showCancel: false
+          })
+        }
       },
       fail: function(res) {
-        //失败也取消loading
-        setTimeout(function () {
+        setTimeout(function() {
           wx.hideToast()
         }, 10);
-        console.log("数据上传失败")
+        console.log("调用CheckCrServer失败");
         wx.showModal({
           title: '温馨提示',
-          content: '数据上传失败~服务器可能在睡觉，请稍后再试哟',
+          content: '连接失败~服务器可能在睡觉，请稍后再试哟',
           showCancel: false,
           confirmText: '确定',
           success: function(res) {
             if (res.confirm) {
-              console.log('用户点击上传失败')
+              console.log('用户点击')
             }
           }
         })
       }
     })
+
   },
 
   initValidate() {
@@ -281,7 +496,7 @@ Page({
         item: true,
       },
       addTxt: {
-        maxlength: 200,
+        maxlength: 140,
       },
       myPhone: {
         required: true,
@@ -328,7 +543,7 @@ Page({
 
     // 自定义验证规则
     this.WxValidate.addMethod('item', (value, param) => {
-      return this.WxValidate.optional(value) || (value.length >= 1 && value.length <= 8)
+      return this.WxValidate.optional(value) || (value.length >= 1 && value.length <= 12)
     }, '最少选择一项业务')
   },
 
@@ -352,6 +567,15 @@ Page({
     })
   },
   formReset: function(e) {
+    var teamIndex = this.data.teamCodeIndex;
+    var allItems = this.data.allItems;
+    for (var i = 0; i < allItems.length; i++) {
+      allItems[i].checked = false;
+    }
+    this.setData({
+      teamCodeIndex: teamIndex,
+      allItems: allItems
+    })
     console.log('form发生了reset事件')
   },
   bindTeamCodeChange: function(e) {
@@ -361,16 +585,18 @@ Page({
       teamCodeIndex: e.detail.value
     })
   },
-  updateRoom: function(e){
+  updateRoom: function(e) {
     updateRoom = e.detail.value;
-    console.log("updateRoom:"+updateRoom)
+    console.log("updateRoom:" + updateRoom)
   },
-  //监听CheckBox多选框改变事件
+  //监听CheckBox多选框改变事件   
+  //CheckBox边框变色
   serviceValChange: function(e) {
+    console.log("checkbox value:"+e.detail.value)
     var allItems = this.data.allItems;
     var checkArr = e.detail.value;
     for (var i = 0; i < allItems.length; i++) {
-      if (checkArr.indexOf(i + "") != -1) {
+      if ((checkArr.indexOf(i + "") != -1) || (checkArr.indexOf("0" + i + "") != -1)) {
         allItems[i].checked = true;
       } else {
         allItems[i].checked = false;
@@ -378,32 +604,34 @@ Page({
     }
 
     //判断一类单选功能，TODO有bug，需要获取每个box的唯一标识
-    //解决！获取最后一个value，即相当于唯一ID   
-    var i = e.detail.value.length-1
-    if (e.detail.value[i] == "2") {
+    //解决！获取最后一个value，即相当于唯一ID
+    //业务关联选择限制
+    var i = e.detail.value.length - 1
+    if (e.detail.value[i] == "02") {
       allItems[3].checked = false;
-    } else if (checkArr[i] == "3") {
+    } else if (checkArr[i] == "03") {
       allItems[2].checked = false;
     }
 
-    if (e.detail.value[i] == "2" || e.detail.value[i] == "3"){     
+    if (e.detail.value[i] == "02" || e.detail.value[i] == "03") {
+      
       allItems[4].checked = true;
     }
-   
-    if (e.detail.value[i] == "4") {
+
+    if (e.detail.value[i] == "04") {
       allItems[5].checked = false;
       allItems[6].checked = false;
-    } else if (checkArr[i] == "5") {
+    } else if (checkArr[i] == "05") {
       allItems[4].checked = false;
       allItems[6].checked = false;
-    } else if (checkArr[i] == "6") {
+    } else if (checkArr[i] == "06") {
       allItems[4].checked = false;
       allItems[5].checked = false;
     }
 
-    if (e.detail.value[i] == "7") {
+    if (e.detail.value[i] == "07") {
       allItems[8].checked = false;
-    } else if (checkArr[i] == "8") {
+    } else if (checkArr[i] == "08") {
       allItems[7].checked = false;
     }
 
@@ -416,7 +644,7 @@ Page({
       phoneNumber: this.data.phoneNum,
     })
   },
-  updatePhone: function(e){
+  updatePhone: function(e) {
     updatPhone = e.detail.value;
   },
   //添加图片
@@ -426,14 +654,14 @@ Page({
       count: 1,
       sizeType: ["compressed"],
       sourceType: ["album", "camera"],
-      success: function (a) {
-        imgName = updatPhone;
+      success: function(a) {
+        imgName = imageObject.imageURL;
         var e = a.tempFilePaths;
         t.setData({
           addImgBlock: !0,
           addImgs: e
         }), wx.uploadFile({
-          url: testServer+"toDBDemo/UserAction/UploadPic",
+          url: Server + "toDBDemo/UserAction/UploadPic",
           filePath: e[0],
           name: "file",
           header: {
@@ -468,4 +696,57 @@ Page({
       urls: []
     });
   },
-})
+  //删除上传图片
+  delImg: function(e) {
+    var t = this;
+    t.setData({
+      addImgBlock: 0,
+    })
+    updatPhone = null;
+    console.log("doDelImg" + updatPhone)
+  },
+
+  //用户点击右上角分享
+  onShareAppMessage: function() {
+
+  },
+
+  didPressChooesImage: function () {
+    var that = this;
+    didPressChooesImage(that);
+  },
+  didCancelTask: function () {
+    this.data.cancelTask()
+  }
+});
+
+function didPressChooesImage(that) {
+  initQiniu();
+  // 微信 API 选文件
+  wx.chooseImage({
+    count: 1,
+    success: function (res) {
+      var filePath = res.tempFilePaths[0];
+      // 交给七牛上传
+      qiniuUploader.upload(filePath, (res) => {
+        that.setData({
+          'imageObject': res,
+          addImgBlock: !0,
+        });
+        imgName = res.imageURL;
+      }, (error) => {
+        console.error('error: ' + JSON.stringify(error));
+      },     
+        null, // 可以使用上述参数，或者使用 null 作为参数占位符
+        (progress) => {
+          console.log('上传进度', progress.progress)
+          console.log('已经上传的数据长度', progress.totalBytesSent)
+          console.log('预期需要上传的数据总长度', progress.totalBytesExpectedToSend)
+        },
+        cancelTask => that.setData({
+          cancelTask
+        })
+      );
+    }
+  })
+}

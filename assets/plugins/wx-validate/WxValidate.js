@@ -99,6 +99,12 @@ class WxValidate {
                 return that.optional(value) || /^1[34578]\d{9}$/.test(value)
             },
             /**
+             * 验证移动手机格式
+             */
+            ydTel(value) {
+              return that.optional(value) || /^((134)|(135)|(136)|(137)|(138)|(139)|(147)|(150)|(151)|(152)|(157)|(158)|(159)|(178)|(182)|(183)|(184)|(187)|(188)|(198))\d{8}$/.test(value)
+            },
+            /**
              * 验证URL格式
              */
             url(value) {

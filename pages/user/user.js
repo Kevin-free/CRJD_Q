@@ -11,7 +11,7 @@ Page({
     imageList: [
       'https://gitee.com/kevin_tao/CRJD/raw/master/ydwt.png',
       'https://gitee.com/kevin_tao/CRJD/raw/master/wxcode.jpg',
-      'https://gitee.com/kevin_tao/CRJD/raw/master/qcodeB0819.png'
+      'https://gitee.com/kevin_tao/CRJD/raw/master/qocdeB0831.png'
     ],
   },
   onLoad: function () {
@@ -81,4 +81,14 @@ Page({
       urls: this.data.imageList // 需要预览的图片http链接列表
     });
   },
+
+  openLoginCr: function(){
+    wx.navigateTo({
+      url: '../loginAdmin/loginAdmin',
+    })
+  },
+
+  onShareAppMessage: function(){
+    
+  }
 })

@@ -1,6 +1,8 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/loginAdmin/loginAdmin",
+    "pages/manageCr/manageCr",
     "pages/user/user",
     "pages/logs/logs"
   ],
@@ -11,7 +13,7 @@
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
-    "borderStyle":"white",
+    "borderStyle": "white",
     "color": "#777777",
     "selectedColor": "#78daff",
     "backgroundColor": "#ddf1f0",

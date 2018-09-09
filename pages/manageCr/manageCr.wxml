@@ -1,0 +1,32 @@
+<view class="page">
+  <view class='picker' hidden='{{hiddenPicker}}'>
+    <picker name='team' bindchange="bindTeamCodeChange" value="{{teamCodeIndex}}" range="{{teamCodes}}">
+      <view class="weui-select">{{teamCodes[teamCodeIndex]}}</view>
+    </picker>
+  </view>
+  <view class="page__bd">
+    <view class="weui-grids">
+      <block wx:for="{{grids}}" wx:key="*this">
+        <view class="weui-grid" hover-class="weui-grid_active" bindtap="{{item.modal}}">
+          <image class="weui-grid__icon" src="{{item.img}}" />
+          <view class="weui-grid__label">{{item.name}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+  <modal id="modalAdd" hidden="{{hiddenmodalAdd}}" title="增加橙人" confirm-text="提交" cancel-text="取消" bindcancel="cancel" bindconfirm="confirmAdd">
+    <input class='name' bindinput='updateName' placeholder="姓名：" />
+    <input class='phone' bindinput='updatePhone' placeholder="电话：" />
+  </modal>
+  <modal id="modalDel" hidden="{{hiddenmodalDel}}" title="删除橙人" confirm-text="提交" cancel-text="取消" bindcancel="cancel" bindconfirm="confirmDel">
+    <input class='phone' bindinput='updatePhone' placeholder="电话：" />
+  </modal>
+  <modal id="modalUpd" hidden="{{hiddenmodalUpd}}" title="查询更改" confirm-text="提交" cancel-text="取消" bindcancel="cancel" bindconfirm="confirmUpd">
+    <input class='phone' bindinput='updatePhone' placeholder="电话：" />
+    <text hidden='{{hiddenTxt}}' decode="{{true}}" space="{{true}}">{{crName}}  {{crPhone}}    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;更改为：</text>
+    <input hidden='{{hiddenTxt}}' class='name' bindinput='updateButName' placeholder="姓名" />
+    <input hidden='{{hiddenTxt}}' class='phone' bindinput='updateButPhone' placeholder="电话：" />
+    <button hidden='{{hiddenTxt}}' type='primary' style='margin-top:20rpx; height:80rpx;' bindtap='confirmBut'>更改</button>
+  </modal>
+
+</view>

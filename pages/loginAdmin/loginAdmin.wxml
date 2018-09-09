@@ -1,0 +1,25 @@
+<!--pages/loginCr/loginCr.wxml-->
+<view class="content">
+  <view class="account">
+    <view class="title">账号</view>
+    <view class="num">
+      <input bindinput="accountInput" placeholder="手机号" placeholder-style="color:#999999;" />
+    </view>
+  </view>
+  <view class="hr"></view>
+  <view class="account">
+    <view class="title">密码</view>
+    <view class="num">
+      <input bindblur="pwdBlur" placeholder="请输入密码" password placeholder-style="color:#999999;" />
+    </view>
+  </view>
+  <view class="hr"></view>  
+  <view class='txt'>
+    仅限橙人管理员登录，如您需申请账号请联系
+    <text bindtap='phonecallevent1' style='color:#8190af;'>{{phone1}} / </text>
+    <text bindtap='phonecallevent2' style='color:#8190af;'>{{phone2}} / </text>
+    <text bindtap='phonecallevent3' style='color:#8190af;'>{{phone3}}</text>
+  </view>
+  <button class="btn" bindtap='login' type="primary">登录</button>
+</view>
+<view>{{message}}</view>
