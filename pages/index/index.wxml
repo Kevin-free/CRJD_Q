@@ -88,6 +88,13 @@
                       <view class='iconfont icon-about' data-index='{{index}}' bindtap='isOpen'> </view>
                     </view>
                     <text class='text_des' hidden='{{item.hiddena}}'>{{item.ywsm}}</text>
+                    <checkbox-group name="itemll" hidden="{{item.hiddenll}}" bindchange="checkboxChange">
+                      <block wx:for="{{itemsll}}" wx:for-item="itemll" wx:key="*this">
+                        <label class="checkboxll">
+                          <checkbox value="{{itemll.value}}" />{{itemll.name}}
+                        </label>
+                      </block>
+                    </checkbox-group>
                     <input name="room" hidden="{{item.hidden}}" class='input2' placeholder="若办理宽带请留下宿舍楼栋号方便宽带装机" placeholder-style="font-size:30rpx" bindinput='updateRoom'></input>
                     <input name="addTxt" hidden="{{item.tareahidden}}" class='textarea' maxlength='140' placeholder="若有建议反馈可选填，字数不超过140" placeholder-style='font-size:30rpx'></input>
                   </view>
@@ -135,6 +142,12 @@
         <view class='fgx'></view>
         <view>
           <slider name="dcmy" max='10' value='5' show-value></slider>
+        </view>
+        <view class='box_conf'>由于部分业务比较特殊，办理后无法进行撤单处理，请确认您要办理的业务。确认后请在方框内打钩。\n
+          <label bindtap='changeConf'>
+            <checkbox></checkbox>
+            <text class='txt_conf'>我已同意办理以上业务</text>
+          </label>
         </view>
       </view>
       <view class='btn'>

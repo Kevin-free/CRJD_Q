@@ -75,6 +75,6 @@ App({
     //localServer http://localhost:8080
     //myServer https://www.ifree258.club
     //yjServer https://www.black-milk.top
-    server: 'http://localhost:8080/',
+    server: 'https://www.ifree258.club/',
   }
 })
